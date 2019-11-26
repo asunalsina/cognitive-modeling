@@ -74,8 +74,10 @@ library(reshape2)
 
     se_val <- c()
     se_val <- sd_val / sqrt(12)
-
-    ggplot(per_participant, aes(per_participant$`time_participant[, 3]`, per_participant$x, group = (Group.1), colour = Group.1)) + geom_line() + geom_point() + geom_errorbar(aes(ymin = mean_val-se_val , ymax = mean_val+se_val))  + xlab("Dialing Time (sec)") + ylab("Lateral Deviation (m)")
+    names(per_participant)[1] <- "Condition"
+    ggplot(per_participant, aes(per_participant$`time_participant[, 3]`, per_participant$x, group = (Condition), colour = Condition)) + 
+      geom_line() + geom_point(aes(shape = Condition)) + geom_errorbar(aes(ymin = mean_val-se_val , ymax = mean_val+se_val))  + 
+      xlab("Dialing Time (sec)") + ylab("Lateral Deviation (m)")
   }
 }
   
@@ -84,8 +86,31 @@ library(reshape2)
   # A
   {
   position_change <- subset(tableOfDriftValuesCalibration, trialTime >= 15000 & trialTime <= 18000)
+  pc <- position_change[,c(2,16,17)]
+  names(pc)[2] <- "Trial"
+  
   ggplot(position_change, aes(trialTime, posX, group = trial, color = trial)) + 
     geom_line() + xlab("Trial time (ms)") + ylab("Lateral Position (m)")
+  
+  tn <- 1 
+  clr <- c()
+  clr <- rgb(runif(20),runif(20),runif(20)) 
+  while(tn<=20){
+    x <- pc$trialTime[pc$Trial==tn]
+    y <- pc$posX[pc$Trial==tn]
+    if(tn==1){
+      plot(x,y, col = clr[tn], type="l",xlab="Trial time (ms)",ylab="Lateral Position (m)",ylim = c(-1,2), xlim = c(15000,18700))
+      
+    }
+    else{
+      li <- lines(x,y,col=clr[tn])
+    }
+    legend(18100, 2, legend=c("Trial 1", "Trial 2", "Trial 3", "Trial 4", "Trial 5", "Trial 6", "Trial 7", "Trial 8", "Trial 9", 
+                              "Trial 10", "Trial 11", "Trial 12", "Trial 13", "Trial 14", "Trial 15", "Trial 16", "Trial 17", 
+                              "Trial 18", "Trial 19", "Trial 20"),
+           cex=0.8, col = clr, lty = 1)
+    tn=tn+1
+  }
 }
 
   # B
@@ -109,7 +134,8 @@ library(reshape2)
     }
 
     position_dataframe <- melt(position_dataframe ,  id.vars = 'time', variable.name = 'series')
-    ggplot(position_dataframe, aes(time,value)) + geom_line(aes(colour = series)) + xlab("Trial time (ms)") + ylab("Lateral Position (m)")
+    names(position_dataframe)[2] <- "Trial"
+    ggplot(position_dataframe, aes(time,value)) + geom_line(aes(colour = Trial)) + xlab("Trial time (ms)") + ylab("Lateral Position (m)")
   }
 
   # C
@@ -128,9 +154,25 @@ library(reshape2)
   
   # E
   {
+    position_simulated <- list()
+    for (i in 1:20){
+      distribution_simulated <- rnorm(60, mean = 0, sd = 0.05)
+      position_simulated[[i]] <- cumsum(tableOfDriftValuesCalibration$posX[with(tableOfDriftValuesCalibration, tableOfDriftValuesCalibration$trial == i)][1:60] + distribution_simulated)
+    }
+
+    position_simulated_dataframe <- as.data.frame(time)
+    for (i in 1:length(position_simulated)){
+      position_simulated_dataframe <- cbind(position_simulated_dataframe, position_simulated[[i]])
+      names(position_simulated_dataframe)[i+1] <- i
+    }
     
+    position_simulated_dataframe <- melt(position_simulated_dataframe ,  id.vars = 'time', variable.name = 'series')
+    names(position_simulated_dataframe)[2] <- "Trial"
+    ggplot(position_simulated_dataframe, aes(time,value)) + geom_line(aes(colour = Trial)) + xlab("Trial time (ms)") + ylab("Lateral Position (m)")
+    
+    simulated_data_trial <- hist(position_simulated_dataframe$value, xlab = "Lateral position (m)", ylab = "Frequency", xlim = range(-2:3), 
+                            ylim = range(0:400), col = "gray", main = "Distribution of car positions (simulated data)", breaks = seq(-2,3,0.2))
+    
+    sd_simulated_data <- sd(position_simulated_dataframe$value)
   }
-
 }
-
-

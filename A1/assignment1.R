@@ -1,6 +1,10 @@
 library(ggplot2)
 library(plyr)
 library(reshape2)
+library(miceadds)
+
+load.Rdata("keyPressDataWithLaneDeviation.Rdata", "keyPressDataWithLaneDeviation")
+load.Rdata("tableOfDriftValuesCalibration.Rdata", "tableOfDriftValuesCalibration")
 
 ## Question 1
 {
@@ -27,11 +31,11 @@ library(reshape2)
     two_conditions <- subset(no_errors, no_errors$partOfExperiment == "dualDialFocus" | no_errors$partOfExperiment == "dualSteerFocus")
     per_participant <- aggregate(abs(two_conditions$lanePosition), by=list(two_conditions$partOfExperiment, two_conditions$phoneNrLengthAfterKeyPress), FUN=mean, na.rm=TRUE)
     time_participant <- aggregate(abs(two_conditions$timeRelativeToTrialStart), by=list(two_conditions$partOfExperiment, two_conditions$phoneNrLengthAfterKeyPress), FUN=mean, na.rm=TRUE)
-    per_participant <- cbind(per_participant, time_participant[,3]/1000)
+    per_participant <- cbind.data.frame(per_participant, time_participant[,3]/1000)
 
     pp <- aggregate(abs(two_conditions$lanePosition), by=list(two_conditions$partOfExperiment, two_conditions$phoneNrLengthAfterKeyPress, two_conditions$pp), FUN=mean, na.rm=TRUE)
     tp <- aggregate(abs(two_conditions$timeRelativeToTrialStart), by=list(two_conditions$partOfExperiment, two_conditions$phoneNrLengthAfterKeyPress, two_conditions$pp), FUN=mean, na.rm=TRUE)
-    ppt <- cbind(pp, tp[,3]/1000)
+    ppt <- cbind.data.frame(pp, tp[,3]/1000)
 
     g1 <- subset(ppt, ppt$Group.1 == "dualDialFocus")
     min_g1 <- c()
@@ -129,7 +133,7 @@ library(reshape2)
     position_dataframe <- as.data.frame(time)
     #names(position_dataframe)[1] <- 'time' 
     for (i in 1:length(position)){
-      position_dataframe <- cbind(position_dataframe, position[[i]])
+      position_dataframe <- cbind.data.frame(position_dataframe, position[[i]])
       names(position_dataframe)[i+1] <- i
     }
 
@@ -152,6 +156,7 @@ library(reshape2)
     sd_simulated <- sd(position_dataframe$value)
   }
   
+  
   # E
   {
     position_simulated <- list()
@@ -162,7 +167,7 @@ library(reshape2)
 
     position_simulated_dataframe <- as.data.frame(time)
     for (i in 1:length(position_simulated)){
-      position_simulated_dataframe <- cbind(position_simulated_dataframe, position_simulated[[i]])
+      position_simulated_dataframe <- cbind.data.frame(position_simulated_dataframe, position_simulated[[i]])
       names(position_simulated_dataframe)[i+1] <- i
     }
     
@@ -175,4 +180,19 @@ library(reshape2)
     
     sd_simulated_data <- sd(position_simulated_dataframe$value)
   }
+}
+
+## Question 3
+{
+  keypress_time <- subset(no_errors, partOfExperiment == "singleDialing2")
+  keypress_intervals <- aggregate(keypress_time$timeRelativeToTrialStart, by=list(keypress_time$phoneNrLengthAfterKeyPress, keypress_time$pp), FUN=mean, na.rm=TRUE)
+  names(keypress_intervals) <- c("Digit", "Participant", "Time")
+  ki <- c()
+  for(i in 1:(length(keypress_intervals$Time)-1)){
+    ki[i] <- keypress_intervals$Time[i+1] - keypress_intervals$Time[i]
+  }
+  keypress_intervals <- cbind.data.frame(keypress_intervals, ki)
+  intervals <- subset(keypress_intervals, Digit != 12)
+  average_keypress_time <- aggregate(intervals$ki, by=list(intervals$Participant), FUN=mean, na.rm=TRUE)
+  new_keypress_time <- mean(average_keypress_time$x)
 }

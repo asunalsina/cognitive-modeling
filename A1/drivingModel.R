@@ -629,7 +629,7 @@ runAllComplexStrategies <- function(nrSimulations,phoneNumber)
       }#end of for nrSimulations
       
       agrResults <- data.frame(keypresses,times,deviations,strats,steers)
-      agrResultsMeanDrift=agrResults
+      agrResultsMeanDrift <- agrResults
       agrResultsMeanDrift$dev<-  with(agrResults,aggregate(deviations,list(strats= strats, steers= steers,keypresses=keypresses), FUN = mean, na.rm = TRUE))$x
       agrResultsMeanDrift$TrialTime <-  with(agrResults[agrResults$keypresses ==11,],aggregate(times,list( strats= strats, steers= steers), FUN = mean, na.rm = TRUE))$x
       agr_matrix <- with(agrResultsMeanDrift,aggregate(dev,list(strats=strats,steers=steers,TrialTime=TrialTime), FUN = mean, na.rm = TRUE))

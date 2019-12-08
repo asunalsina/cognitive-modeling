@@ -59,7 +59,7 @@ analysisOfHumanData <- function()
   load.Rdata("keyPressDataWithLaneDeviation.Rdata", "keyPressDataWithLaneDeviation")
   load.Rdata("tableOfDriftValuesCalibration.Rdata", "tableOfDriftValuesCalibration")
 	
-	5,### calculate the necessary averages and SDs
+	### calculate the necessary averages and SDs
   ## Question 1
   {
     no_errors <- subset(keyPressDataWithLaneDeviation, typingErrorMadeOnTrial == 0)
@@ -244,6 +244,7 @@ analysisOfHumanData <- function()
     for(i in 1:(length(keypress_intervals$Time)-1)){
       ki[i] <- keypress_intervals$Time[i+1] - keypress_intervals$Time[i]
     }
+    ki[156] = 0
     keypress_intervals <- cbind.data.frame(keypress_intervals, ki)
     intervals <- subset(keypress_intervals, Digit != 12)
     average_keypress_time <- aggregate(intervals$ki, by=list(intervals$Participant), FUN=mean, na.rm=TRUE)

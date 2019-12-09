@@ -650,10 +650,17 @@ runAllComplexStrategies <- function(nrSimulations,phoneNumber)
   
   with(agr_results,plot(TrialTime/1000,abs(dev),pch=21,bg="dark grey",col="dark grey",log="x",xlab="Dial time (s)",ylab="Average Lateral Deviation (m)"))
   
-  summary(agr_results$TrialTime)
+  return(agr_results)
 }
 
-
+{
+  s1 <- runAllComplexStrategies(1, "07854325698")
+  s5 <- runAllComplexStrategies(5, "07854325698")
+  s10 <- runAllComplexStrategies(10, "07854325698")
+  s50 <- runAllComplexStrategies(50, "07854325698")
+  s100 <- runAllComplexStrategies(100, "07854325698")
+  s200 <- runAllComplexStrategies(200, "07854325698")
+}
 
 
 

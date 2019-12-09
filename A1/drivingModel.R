@@ -22,11 +22,13 @@ startingPositionInLane <- 0.27 			#assume that car starts already away from lane
 
 #parameters for deviations in car drift due the simulator environment: See Janssen & Brumby (2010) page 1555
 gaussDeviateMean <- 0
-gaussDeviateSD <- 0.05 #0.13
+gaussDeviateSD <- 0.05 
+#gaussDeviateSD <- 0.13 # original value
 
 #When the car is actively contorlled, we calculate a value using equation (1) in Janssen & Brumby (2010). However, some noise is added on top of this equation to account for variation in human behavior. See Janssen & Brumby (2010) page 1555. Also see function "updateSteering" on how this function is used
 gaussDriveNoiseMean <- 0
-gaussDriveNoiseSD <- 0.02  #0.1	#in meter/sec
+gaussDriveNoiseSD <- 0.02  
+#gaussDriveNoiseSD <- 0.1	#in meter/sec original value
 
 timeStepPerDriftUpdate <- 50 ### msec: what is the time interval between two updates of lateral position?
 
@@ -37,7 +39,9 @@ startvelocity <- 0 	#a global parameter used to store the lateral velocity of th
 
 ### all times in milliseconds
 ## times for dialing
-singleTaskKeyPressTimes <- c(275,275,275,275,275,275,275,275,275,275,275)  #c(400,400,400,400,400,400,400,400,400,400,400)   #digit times needed per keypress at that specific position (note: normalized for chunk retrieval time at digits 1 and 6 --- a retrieval cost would come on top of this)
+singleTaskKeyPressTimes <- c(275,275,275,275,275,275,275,275,275,275,275)  
+# original value
+#singleTaskKeyPressTimes <- c(400,400,400,400,400,400,400,400,400,400,400)   #digit times needed per keypress at that specific position (note: normalized for chunk retrieval time at digits 1 and 6 --- a retrieval cost would come on top of this)
 
 digitTypeUK <- c("chunk","oth","oth","oth","oth","chunk","oth","oth","oth","oth","oth")  ### is each digit either the start of a chunk or some other digit?
 
@@ -664,17 +668,17 @@ runAllComplexStrategies <- function(nrSimulations,phoneNumber)
 }
 
 # plots
-{
-  condition_s50 <- s50$TrialTime[with(s50, s50$strats == 5)]
-  condition_s502 <- s50$dev[with(s50, s50$strats == 5)]
-  cs50 <- data.frame()
-  cs50 <- cbind.data.frame(condition_s50, condition_s502)
+plot_complex <- function(complex_model){
+  condition_1_model <- complex_model$TrialTime[with(complex_model, complex_model$strats == 5)]
+  condition_2_model <- complex_model$dev[with(complex_model, complex_model$strats == 5)]
+  conditions_model <- data.frame()
+  conditions_model <- cbind.data.frame(condition_1_model, condition_2_model)
 
-  plot(s50$TrialTime/1000,abs(s50$dev),pch=21,
-      bg="grey",col="grey", log="x",
-      ylim = c(0.2,1),
+  plot(complex_model$TrialTime/1000,abs(complex_model$dev),pch=21,
+      bg="grey",col="grey", #log="x",
+      ylim = c(0,2), xlim = c(0,45),
       xlab="Dial time (s)",ylab="Average Lateral Deviation (m)")
-  points(cs50$condition_s50/1000, abs(cs50$condition_s502), pch=4,
+  points(conditions_model$condition_1_model/1000, abs(conditions_model$condition_2_model), pch=4,
       bg="black",col="black")
   # dialing focus data
   points(steer_dial_mean$x[1]/1000, lateral_deviation_mean$x[1], pch=0,
@@ -692,9 +696,44 @@ runAllComplexStrategies <- function(nrSimulations,phoneNumber)
          length=0.05, angle=90, code=3)
   arrows((steer_dial_mean$x[2] - steer_dial_se$x[2])/1000, lateral_deviation_mean$x[2], 
          (steer_dial_mean$x[2] + steer_dial_se$x[2])/1000, lateral_deviation_mean$x[2], length=0.05, angle=90, code=3)
-  
-  legend(12, 1, legend=c("Dialing-focus data", "Steering-focus data", "Model alternative", "Chunk interleaving only strategy"), 
+  legend(15, 2, legend=c("Dialing-focus data", "Steering-focus data", "Model alternative", "Chunk interleaving only strategy"), 
          pch=c(0,5,21,4), cex=0.8)
+}
+
+# different models with different conditions
+{
+  # A: our values for sd (0.05 - 0.02)
+  # B: old values for sd (0.13 - 0.1)
+  # C: our values for IKI (275)
+  # D: old values for IKI (400)
+  # E: 10 simulations
+  # F: 50 simulations
+  
+  model_ACE <- runAllComplexStrategies(10, "07854325698")
+  model_ACF <- runAllComplexStrategies(50, "07854325698")
+  model_ADE <- runAllComplexStrategies(10, "07854325698")
+  model_ADF <- runAllComplexStrategies(50, "07854325698")
+  model_BCE <- runAllComplexStrategies(10, "07854325698")
+  model_BCF <- runAllComplexStrategies(50, "07854325698")
+  model_BDE <- runAllComplexStrategies(10, "07854325698")
+  model_BDF <- runAllComplexStrategies(50, "07854325698")
+  
+  # 7-1.4
+  plot_complex(model_ACE)
+  # 7-1
+  plot_complex(model_ACF)
+  # 9.5-1.8
+  plot_complex(model_ADE)
+  # 9.5-1.4
+  plot_complex(model_ADF)
+  # 12-1.8
+  plot_complex(model_BCE)
+  # 12-1.8
+  plot_complex(model_BCF)
+  # 15-2.5
+  plot_complex(model_BDE)
+  # 15-2
+  plot_complex(model_BDF)
 }
 
 

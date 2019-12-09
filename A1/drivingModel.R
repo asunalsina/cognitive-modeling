@@ -653,6 +653,7 @@ runAllComplexStrategies <- function(nrSimulations,phoneNumber)
   return(agr_results)
 }
 
+# runAllComplexStrategies models
 {
   s1 <- runAllComplexStrategies(1, "07854325698")
   s5 <- runAllComplexStrategies(5, "07854325698")
@@ -660,6 +661,40 @@ runAllComplexStrategies <- function(nrSimulations,phoneNumber)
   s50 <- runAllComplexStrategies(50, "07854325698")
   s100 <- runAllComplexStrategies(100, "07854325698")
   s200 <- runAllComplexStrategies(200, "07854325698")
+}
+
+# plots
+{
+  condition_s50 <- s50$TrialTime[with(s50, s50$strats == 5)]
+  condition_s502 <- s50$dev[with(s50, s50$strats == 5)]
+  cs50 <- data.frame()
+  cs50 <- cbind.data.frame(condition_s50, condition_s502)
+
+  plot(s50$TrialTime/1000,abs(s50$dev),pch=21,
+      bg="grey",col="grey", log="x",
+      ylim = c(0.2,1),
+      xlab="Dial time (s)",ylab="Average Lateral Deviation (m)")
+  points(cs50$condition_s50/1000, abs(cs50$condition_s502), pch=4,
+      bg="black",col="black")
+  # dialing focus data
+  points(steer_dial_mean$x[1]/1000, lateral_deviation_mean$x[1], pch=0,
+         bg="black",col="black")
+  arrows(steer_dial_mean$x[1]/1000, lateral_deviation_mean$x[1] - lateral_deviation_se$x[1],
+         steer_dial_mean$x[1]/1000, lateral_deviation_mean$x[1] + lateral_deviation_se$x[1], 
+         length=0.05, angle=90, code=3)
+  arrows((steer_dial_mean$x[1] - steer_dial_se$x[1])/1000, lateral_deviation_mean$x[1], 
+         (steer_dial_mean$x[1] + steer_dial_se$x[1])/1000, lateral_deviation_mean$x[1], length=0.05, angle=90, code=3)
+  # steering focus data
+  points(steer_dial_mean$x[2]/1000, lateral_deviation_mean$x[2], pch=5,
+         bg="black",col="black")
+  arrows(steer_dial_mean$x[2]/1000, lateral_deviation_mean$x[2] - lateral_deviation_se$x[2],
+         steer_dial_mean$x[2]/1000, lateral_deviation_mean$x[2] + lateral_deviation_se$x[2], 
+         length=0.05, angle=90, code=3)
+  arrows((steer_dial_mean$x[2] - steer_dial_se$x[2])/1000, lateral_deviation_mean$x[2], 
+         (steer_dial_mean$x[2] + steer_dial_se$x[2])/1000, lateral_deviation_mean$x[2], length=0.05, angle=90, code=3)
+  
+  legend(12, 1, legend=c("Dialing-focus data", "Steering-focus data", "Model alternative", "Chunk interleaving only strategy"), 
+         pch=c(0,5,21,4), cex=0.8)
 }
 
 

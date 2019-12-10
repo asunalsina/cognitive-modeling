@@ -39,7 +39,8 @@ startvelocity <- 0 	#a global parameter used to store the lateral velocity of th
 
 ### all times in milliseconds
 ## times for dialing
-singleTaskKeyPressTimes <- c(275,275,275,275,275,275,275,275,275,275,275)  
+#singleTaskKeyPressTimes <- c(275,275,275,275,275,275,275,275,275,275,275) 
+singleTaskKeyPressTimes <- c(322,303,299,283,295,239,277,315,257,272,239)
 # original value
 #singleTaskKeyPressTimes <- c(400,400,400,400,400,400,400,400,400,400,400)   #digit times needed per keypress at that specific position (note: normalized for chunk retrieval time at digits 1 and 6 --- a retrieval cost would come on top of this)
 
@@ -668,18 +669,37 @@ runAllComplexStrategies <- function(nrSimulations,phoneNumber)
 }
 
 # plots
-plot_complex <- function(complex_model){
+plot_complex <- function(complex_model, y_upper, x_leg, y_leg, analysis = FALSE){
+  
   condition_1_model <- complex_model$TrialTime[with(complex_model, complex_model$strats == 5)]
   condition_2_model <- complex_model$dev[with(complex_model, complex_model$strats == 5)]
   conditions_model <- data.frame()
   conditions_model <- cbind.data.frame(condition_1_model, condition_2_model)
-
-  plot(complex_model$TrialTime/1000,abs(complex_model$dev),pch=21,
-      bg="grey",col="grey", #log="x",
-      ylim = c(0,2), xlim = c(0,45),
-      xlab="Dial time (s)",ylab="Average Lateral Deviation (m)")
+  
+  b <- c(3, complex_model$TrialTime/1000)
+  c <- c(7, abs(complex_model$dev))
+  
+  plot(b,c,pch=21,
+       bg="grey",col="grey", log="x",
+       ylim = c(0,y_upper),
+       xlab="Dial time (s)",ylab="Average Lateral Deviation (m)")
+  if(analysis){
+    
+    lateral_deviation_strategy <- subset(complex_model, (complex_model$dev < lateral_deviation_mean$x[2] + lateral_deviation_se$x[2] & 
+                                                           complex_model$dev > lateral_deviation_mean$x[2] - lateral_deviation_se$x[2]))
+    
+    time_strategy <- subset(lateral_deviation_strategy, (lateral_deviation_strategy$TrialTime < steer_dial_mean$x[2] + steer_dial_se$x[2] & 
+                                                           lateral_deviation_strategy$TrialTime > steer_dial_mean$x[2] - steer_dial_se$x[2]))
+    
+    points(time_strategy$TrialTime/1000, abs(time_strategy$dev), pch=18, bg="red",col="red")
+    legend(x_leg, y_leg, legend=c("Dialing-focus data", "Steering-focus data", "Model alternative", "Chunk interleaving only strategy", "Strategy inside error bars (human data)"), 
+           pch=c(0,5,21,4,18), cex=0.8)
+  }else{
+    legend(x_leg, y_leg, legend=c("Dialing-focus data", "Steering-focus data", "Model alternative", "Chunk interleaving only strategy"), 
+           pch=c(0,5,21,4), cex=0.8)
+  }
   points(conditions_model$condition_1_model/1000, abs(conditions_model$condition_2_model), pch=4,
-      bg="black",col="black")
+         bg="black",col="black")
   # dialing focus data
   points(steer_dial_mean$x[1]/1000, lateral_deviation_mean$x[1], pch=0,
          bg="black",col="black")
@@ -696,8 +716,7 @@ plot_complex <- function(complex_model){
          length=0.05, angle=90, code=3)
   arrows((steer_dial_mean$x[2] - steer_dial_se$x[2])/1000, lateral_deviation_mean$x[2], 
          (steer_dial_mean$x[2] + steer_dial_se$x[2])/1000, lateral_deviation_mean$x[2], length=0.05, angle=90, code=3)
-  legend(15, 2, legend=c("Dialing-focus data", "Steering-focus data", "Model alternative", "Chunk interleaving only strategy"), 
-         pch=c(0,5,21,4), cex=0.8)
+  
 }
 
 # different models with different conditions
@@ -719,22 +738,45 @@ plot_complex <- function(complex_model){
   model_BDF <- runAllComplexStrategies(50, "07854325698")
   
   # 7-1.4
-  plot_complex(model_ACE)
+  plot_complex(model_ACE, 1.4, 7, 1.4)
   # 7-1
-  plot_complex(model_ACF)
-  # 9.5-1.8
-  plot_complex(model_ADE)
-  # 9.5-1.4
-  plot_complex(model_ADF)
-  # 12-1.8
-  plot_complex(model_BCE)
-  # 12-1.8
-  plot_complex(model_BCF)
-  # 15-2.5
-  plot_complex(model_BDE)
-  # 15-2
-  plot_complex(model_BDF)
+  plot_complex(model_ACF, 1, 7, 1)
+  # 7.5-1.5
+  plot_complex(model_ADE, 1.5, 7.5, 1.5)
+  # 7.5-1
+  plot_complex(model_ADF, 1, 7.5, 1)
+  # 7.5-2.5
+  plot_complex(model_BCE, 2.5, 7.5, 2.5)
+  # 7.5-2
+  plot_complex(model_BCF, 2, 7.5, 2)
+  # 7.5-4
+  plot_complex(model_BDE, 4, 7.5, 4)
+  # 7.5-2
+  plot_complex(model_BDF, 2, 7.5, 2)
 }
+
+# analysis
+{
+  lateral_deviation_strategy <- subset(s50, (s50$dev < lateral_deviation_mean$x[2] + lateral_deviation_se$x[2] & 
+                                                         s50$dev > lateral_deviation_mean$x[2] - lateral_deviation_se$x[2]))
+  
+  time_strategy <- subset(lateral_deviation_strategy, (lateral_deviation_strategy$TrialTime < steer_dial_mean$x[2] + steer_dial_se$x[2] & 
+                                                         lateral_deviation_strategy$TrialTime > steer_dial_mean$x[2] - steer_dial_se$x[2]))
+
+  plot_complex(s50, 1, 8, 1, TRUE)
+}
+
+# bonus question
+{
+  model_IKI_50 <- runAllComplexStrategies(50, "07854325698")
+  model_IKI_100 <- runAllComplexStrategies(100, "07854325698")
+  model_IKI_200 <- runAllComplexStrategies(200, "07854325698")
+  
+  plot_complex(model_IKI_50, 1, 7, 1)
+  plot_complex(model_IKI_100, 1, 7, 1)
+  plot_complex(model_IKI_200, 1, 7, 1)
+}
+
 
 
 

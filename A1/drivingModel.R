@@ -39,8 +39,8 @@ startvelocity <- 0 	#a global parameter used to store the lateral velocity of th
 
 ### all times in milliseconds
 ## times for dialing
-#singleTaskKeyPressTimes <- c(275,275,275,275,275,275,275,275,275,275,275) 
-singleTaskKeyPressTimes <- c(322,303,299,283,295,239,277,315,257,272,239)
+singleTaskKeyPressTimes <- c(275,275,275,275,275,275,275,275,275,275,275) 
+#singleTaskKeyPressTimes <- c(322,303,299,283,295,239,277,315,257,272,239)
 # original value
 #singleTaskKeyPressTimes <- c(400,400,400,400,400,400,400,400,400,400,400)   #digit times needed per keypress at that specific position (note: normalized for chunk retrieval time at digits 1 and 6 --- a retrieval cost would come on top of this)
 
@@ -764,17 +764,25 @@ plot_complex <- function(complex_model, y_upper, x_leg, y_leg, analysis = FALSE)
                                                          lateral_deviation_strategy$TrialTime > steer_dial_mean$x[2] - steer_dial_se$x[2]))
 
   plot_complex(s50, 1, 8, 1, TRUE)
+  
+  one_interleave <- nrow(a[a$`as.numeric(time_strategy$strats)` <= 11,])
+  two_interleave <- nrow(a[a$`as.numeric(time_strategy$strats)` >= 12 & a$`as.numeric(time_strategy$strats)` <=56,])
+  three_interleave <- nrow(a[a$`as.numeric(time_strategy$strats)` >= 57,])
+  
+  one_per <- (one_interleave / 248)*100
+  two_per <- (two_interleave / 248)*100
+  three_per <- (three_interleave / 248)*100
 }
 
 # bonus question
 {
-  model_IKI_50 <- runAllComplexStrategies(50, "07854325698")
-  model_IKI_100 <- runAllComplexStrategies(100, "07854325698")
-  model_IKI_200 <- runAllComplexStrategies(200, "07854325698")
+  #model_IKI_50 <- runAllComplexStrategies(50, "07854325698")
+  #model_IKI_100 <- runAllComplexStrategies(100, "07854325698")
+  #model_IKI_200 <- runAllComplexStrategies(200, "07854325698")
   
-  plot_complex(model_IKI_50, 1, 7, 1)
-  plot_complex(model_IKI_100, 1, 7, 1)
-  plot_complex(model_IKI_200, 1, 7, 1)
+  #plot_complex(model_IKI_50, 1, 7, 1)
+  #plot_complex(model_IKI_100, 1, 7, 1)
+  #plot_complex(model_IKI_200, 1, 7, 1)
 }
 
 

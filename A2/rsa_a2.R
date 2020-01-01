@@ -114,8 +114,7 @@
   sixth_neural_responses_t_test <- t.test(sixth_neural_face, sixth_neural_noface, paired = FALSE)
   
   # faceness among animate objects
-  face_animate <- sixth_neural_responses[sixth_without_diagonal == TRUE & first_without_diagonal == TRUE]
-  face_animate_t_test <- t.test(face_animate, first_neural_animate, paired = FALSE)
+  face_animate_t_test <- t.test(sixth_neural_face, first_neural_animate, paired = FALSE)
 }
 
 ## Third column t.test (human - no human)
@@ -136,7 +135,6 @@
   third_neural_responses_t_test <- t.test(third_neural_human, third_neural_nohuman, paired = FALSE)
 
   # faceness among animate objects
-  human_animate <- third_neural_responses[third_without_diagonal == TRUE & first_without_diagonal == TRUE]
-  human_animate_t_test <- t.test(human_animate, first_neural_animate, paired = FALSE)
+  human_animate_t_test <- t.test(third_neural_human, first_neural_animate, paired = FALSE)
 }
 

@@ -62,7 +62,7 @@
     geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("")
 }
 
-## First column t.test
+## First column t.test (animate - inanimate)
 {
   first_column <- category_vectors[,1]
   first_column_matrix <- data.frame()
@@ -73,30 +73,30 @@
   
   # diagonal matrix
   first_neural_responses <- neural_responses[lower.tri(neural_responses, diag = FALSE)]
-  # animate = 1
-  first_neural_animate <- first_neural_responses[first_without_diagonal == 1]
-  # inanimate = 0
-  first_neural_inanimate <- first_neural_responses[first_without_diagonal == 0]
+  # animate -> TRUE
+  first_neural_animate <- first_neural_responses[first_without_diagonal == TRUE]
+  # inanimate -> FALSE
+  first_neural_inanimate <- first_neural_responses[first_without_diagonal == FALSE]
   first_neural_responses_t_test <- t.test(first_neural_animate, first_neural_inanimate, paired = FALSE)
   
   # diagonal matrix
   first_individual <- noise_responses[[1]][lower.tri(noise_responses[[1]], diag = FALSE)]
-  # animate = 1
-  first_individual_animate <- first_individual[first_without_diagonal == 1]
-  # inanimate = 0
-  first_individual_inanimate <- first_individual[first_without_diagonal == 0]
+  # animate -> TRUE
+  first_individual_animate <- first_individual[first_without_diagonal == TRUE]
+  # inanimate -> FALSE
+  first_individual_inanimate <- first_individual[first_without_diagonal == FALSE]
   first_individual_t_test <- t.test(first_individual_animate, first_individual_inanimate, paired = FALSE)
   
   # diagonal matrix
   first_average <- average_matrix[lower.tri(average_matrix, diag = FALSE)]
-  # animate = 1
-  first_average_animate <- first_average[first_without_diagonal == 1]
-  # inanimate = 0
-  first_average_inanimate <- first_average[first_without_diagonal == 0]
+  # animate -> TRUE
+  first_average_animate <- first_average[first_without_diagonal == TRUE]
+  # inanimate -> FALSE
+  first_average_inanimate <- first_average[first_without_diagonal == FALSE]
   first_average_individual_t_test <- t.test(first_average_animate, first_average_inanimate, paired = FALSE)
 }
 
-## Sixth column t.test
+## Sixth column t.test (face - no face)
 {
   sixth_column <- category_vectors[,6]
   sixth_column_matrix <- data.frame()
@@ -107,26 +107,36 @@
   
   # diagonal matrix
   sixth_neural_responses <- neural_responses[lower.tri(neural_responses, diag = FALSE)]
-  # animate = 1
-  sixth_neural_animate <- sixth_neural_responses[sixth_without_diagonal == 1]
-  # inanimate = 0
-  sixth_neural_inanimate <- sixth_neural_responses[sixth_without_diagonal == 0]
-  sixth_neural_responses_t_test <- t.test(sixth_neural_animate, sixth_neural_inanimate, paired = FALSE)
+  # face -> TRUE
+  sixth_neural_face <- sixth_neural_responses[sixth_without_diagonal == TRUE]
+  # no face -> FALSE
+  sixth_neural_noface <- sixth_neural_responses[sixth_without_diagonal == FALSE]
+  sixth_neural_responses_t_test <- t.test(sixth_neural_face, sixth_neural_noface, paired = FALSE)
+  
+  # faceness among animate objects
+  face_animate <- sixth_neural_responses[sixth_without_diagonal == TRUE & first_without_diagonal == TRUE]
+  face_animate_t_test <- t.test(face_animate, first_neural_animate, paired = FALSE)
+}
+
+## Third column t.test (human - no human)
+{
+  third_column <- category_vectors[,3]
+  third_column_matrix <- data.frame()
+  for (i in third_column){
+    third_column_matrix <- rbind(third_column_matrix, i == third_column)
+  }
+  third_without_diagonal <- third_column_matrix[lower.tri(third_column_matrix, diag = FALSE)]
   
   # diagonal matrix
-  sixth_individual <- noise_responses[[1]][lower.tri(noise_responses[[1]], diag = FALSE)]
-  # animate = 1
-  sixth_individual_animate <- sixth_individual[sixth_without_diagonal == 1]
-  # inanimate = 0
-  sixth_individual_inanimate <- sixth_individual[sixth_without_diagonal == 0]
-  sixth_individual_t_test <- t.test(sixth_individual_animate, sixth_individual_inanimate, paired = FALSE)
-  
-  # diagonal matrix
-  sixth_average <- average_matrix[lower.tri(average_matrix, diag = FALSE)]
-  # animate = 1
-  sixth_average_animate <- sixth_average[sixth_without_diagonal == 1]
-  # inanimate = 0
-  sixth_average_inanimate <- sixth_average[sixth_without_diagonal == 0]
-  sixth_average_individual_t_test <- t.test(sixth_average_animate, sixth_average_inanimate, paired = FALSE)
+  third_neural_responses <- neural_responses[lower.tri(neural_responses, diag = FALSE)]
+  # human -> TRUE
+  third_neural_human <- third_neural_responses[third_without_diagonal == TRUE]
+  # no human -> FALSE
+  third_neural_nohuman <- third_neural_responses[third_without_diagonal == FALSE]
+  third_neural_responses_t_test <- t.test(third_neural_human, third_neural_nohuman, paired = FALSE)
+
+  # faceness among animate objects
+  human_animate <- third_neural_responses[third_without_diagonal == TRUE & first_without_diagonal == TRUE]
+  human_animate_t_test <- t.test(human_animate, first_neural_animate, paired = FALSE)
 }
 

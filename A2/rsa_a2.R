@@ -1,10 +1,11 @@
-## Library
+## Libraries
 {
   library(d3heatmap)
   library(ggplot2)
   library(RColorBrewer)
   library(gplots)
   library(reshape2)
+  library(sjstats)
 }
 
 ## Read tables
@@ -62,7 +63,7 @@
     geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("")
 }
 
-## First column t.test (animate - inanimate)
+## First column t.test (same animacy - different animacy)
 {
   first_column <- category_vectors[,1]
   first_column_matrix <- data.frame()
@@ -71,70 +72,137 @@
   }
   first_without_diagonal <- first_column_matrix[lower.tri(first_column_matrix, diag = FALSE)]
   
-  # diagonal matrix
-  first_neural_responses <- neural_responses[lower.tri(neural_responses, diag = FALSE)]
-  # animate -> TRUE
-  first_neural_animate <- first_neural_responses[first_without_diagonal == TRUE]
-  # inanimate -> FALSE
-  first_neural_inanimate <- first_neural_responses[first_without_diagonal == FALSE]
-  first_neural_responses_t_test <- t.test(first_neural_animate, first_neural_inanimate, paired = FALSE)
+  # triangular matrix
+  first_neural_responses <- RDM[[1]][lower.tri(RDM[[1]], diag = FALSE)]
+  # same animacy -> TRUE
+  first_neural_same <- first_neural_responses[first_without_diagonal == TRUE]
+  # different animacy -> FALSE
+  first_neural_diff <- first_neural_responses[first_without_diagonal == FALSE]
+  first_neural_responses_t_test <- t.test(first_neural_same, first_neural_diff, paired = FALSE)
   
-  # diagonal matrix
+  # triangular matrix
   first_individual <- noise_responses[[1]][lower.tri(noise_responses[[1]], diag = FALSE)]
-  # animate -> TRUE
-  first_individual_animate <- first_individual[first_without_diagonal == TRUE]
-  # inanimate -> FALSE
-  first_individual_inanimate <- first_individual[first_without_diagonal == FALSE]
-  first_individual_t_test <- t.test(first_individual_animate, first_individual_inanimate, paired = FALSE)
+  # same animacy -> TRUE
+  first_individual_same <- first_individual[first_without_diagonal == TRUE]
+  # different animacy -> FALSE
+  first_individual_diff <- first_individual[first_without_diagonal == FALSE]
+  first_individual_t_test <- t.test(first_individual_same, first_individual_diff, paired = FALSE)
   
-  # diagonal matrix
+  # triangular matrix
   first_average <- average_matrix[lower.tri(average_matrix, diag = FALSE)]
-  # animate -> TRUE
-  first_average_animate <- first_average[first_without_diagonal == TRUE]
-  # inanimate -> FALSE
-  first_average_inanimate <- first_average[first_without_diagonal == FALSE]
-  first_average_individual_t_test <- t.test(first_average_animate, first_average_inanimate, paired = FALSE)
+  # same animacy -> TRUE
+  first_average_same <- first_average[first_without_diagonal == TRUE]
+  # different animacy -> FALSE
+  first_average_diff <- first_average[first_without_diagonal == FALSE]
+  first_average_individual_t_test <- t.test(first_average_same, first_average_diff, paired = FALSE)
 }
 
 ## Sixth column t.test (face - no face)
 {
-  sixth_column <- category_vectors[,6]
-  sixth_column_matrix <- data.frame()
-  for (i in sixth_column){
-    sixth_column_matrix <- rbind(sixth_column_matrix, i == sixth_column)
+  {
+    sixth_column <- category_vectors[,6]
+    sixth_column_matrix <- data.frame()
+    for (i in sixth_column){
+      sixth_column_matrix <- rbind(sixth_column_matrix, i == sixth_column)
+    }
+    sixth_without_diagonal <- sixth_column_matrix[lower.tri(sixth_column_matrix, diag = FALSE)]
+  
+    # triangular matrix
+    sixth_neural_responses <- RDM[[1]][lower.tri(RDM[[1]], diag = FALSE)]
+    # face -> TRUE
+    sixth_neural_face <- sixth_neural_responses[sixth_without_diagonal == TRUE]
+    # no face -> FALSE
+    sixth_neural_noface <- sixth_neural_responses[sixth_without_diagonal == FALSE]
+    sixth_neural_responses_t_test <- t.test(sixth_neural_face, sixth_neural_noface, paired = FALSE)
   }
-  sixth_without_diagonal <- sixth_column_matrix[lower.tri(sixth_column_matrix, diag = FALSE)]
   
-  # diagonal matrix
-  sixth_neural_responses <- neural_responses[lower.tri(neural_responses, diag = FALSE)]
-  # face -> TRUE
-  sixth_neural_face <- sixth_neural_responses[sixth_without_diagonal == TRUE]
-  # no face -> FALSE
-  sixth_neural_noface <- sixth_neural_responses[sixth_without_diagonal == FALSE]
-  sixth_neural_responses_t_test <- t.test(sixth_neural_face, sixth_neural_noface, paired = FALSE)
+  {
+    # faceness among animate objects
+    neural_responses_triangular <- RDM[[1]][lower.tri(RDM[[1]], diag = FALSE)]
+
+    first_column_animate_matrix <- data.frame()
+    for (i in first_column){
+      if(i == 1){
+        first_column_animate_matrix <- rbind(first_column_animate_matrix, i == first_column)
+      }else{
+        first_column_animate_matrix <- rbind(first_column_animate_matrix, rep(FALSE, length(first_column)))
+      }
+    }
+    first_animate_without_diagonal <- first_column_animate_matrix[lower.tri(first_column_animate_matrix, diag = FALSE)]
   
-  # faceness among animate objects
-  face_animate_t_test <- t.test(sixth_neural_face, first_neural_animate, paired = FALSE)
+    animate_face_matrix <- data.frame()
+    for (i in 1:length(first_animate_without_diagonal)){
+      if(first_animate_without_diagonal[i] == 1 & sixth_without_diagonal[i] == 1){
+        animate_face_matrix <- rbind(animate_face_matrix, TRUE)
+      }else{
+        animate_face_matrix <- rbind(animate_face_matrix, FALSE)
+      }
+    }  
+  
+    # face -> TRUE
+    first_neural_face_animate <- neural_responses_triangular[animate_face_matrix == TRUE]
+    # no face -> FALSE
+    first_neural_noface_animate <- neural_responses_triangular[animate_face_matrix == FALSE]
+    face_t_test <- t.test(first_neural_face_animate, first_neural_noface_animate, paired = FALSE)
+    face_t_test
+  }
 }
 
 ## Third column t.test (human - no human)
 {
-  third_column <- category_vectors[,3]
-  third_column_matrix <- data.frame()
-  for (i in third_column){
-    third_column_matrix <- rbind(third_column_matrix, i == third_column)
-  }
-  third_without_diagonal <- third_column_matrix[lower.tri(third_column_matrix, diag = FALSE)]
+  {
+    third_column <- category_vectors[,3]
+    third_column_matrix <- data.frame()
+    for (i in third_column){
+      third_column_matrix <- rbind(third_column_matrix, i == third_column)
+    }
+    third_without_diagonal <- third_column_matrix[lower.tri(third_column_matrix, diag = FALSE)]
   
-  # diagonal matrix
-  third_neural_responses <- neural_responses[lower.tri(neural_responses, diag = FALSE)]
-  # human -> TRUE
-  third_neural_human <- third_neural_responses[third_without_diagonal == TRUE]
-  # no human -> FALSE
-  third_neural_nohuman <- third_neural_responses[third_without_diagonal == FALSE]
-  third_neural_responses_t_test <- t.test(third_neural_human, third_neural_nohuman, paired = FALSE)
+    # triangular matrix
+    third_neural_responses <- RDM[[1]][lower.tri(RDM[[1]], diag = FALSE)]
+    # human -> TRUE
+    third_neural_human <- third_neural_responses[third_without_diagonal == TRUE]
+    # no human -> FALSE
+    third_neural_nohuman <- third_neural_responses[third_without_diagonal == FALSE]
+    third_neural_responses_t_test <- t.test(third_neural_human, third_neural_nohuman, paired = FALSE)
+  }
+  
+  {  
+    # human among animate objects
+    animate_human_matrix <- data.frame()
+    for (i in 1:length(first_animate_without_diagonal)){
+      if(first_animate_without_diagonal[i] == 1 & third_without_diagonal[i] == 1){
+        animate_human_matrix <- rbind(animate_human_matrix, TRUE)
+      }else{
+        animate_human_matrix <- rbind(animate_human_matrix, FALSE)
+      }
+    }  
+    
+    # human -> TRUE
+    first_neural_human_animate <- neural_responses_triangular[animate_human_matrix == TRUE]
+    # no human -> FALSE
+    first_neural_nohuman_animate <- neural_responses_triangular[animate_human_matrix == FALSE]
+    human_t_test <- t.test(first_neural_human_animate, first_neural_nohuman_animate, paired = FALSE)
+    human_t_test
+  }
+}
 
-  # faceness among animate objects
-  human_animate_t_test <- t.test(third_neural_human, first_neural_animate, paired = FALSE)
+## ANOVA or linear model
+{
+  # sixth_column_animate_matrix
+  # first_column_matrix
+  neural_matrix <- RDM[[1]][lower.tri(RDM[[1]], diag = FALSE)]
+  face_animated_matrix <- as.matrix(animate_face_matrix)
+  animacy_matrix <- first_without_diagonal
+  anova_test <- aov(neural_matrix ~ face_animated_matrix + animacy_matrix)
+  eta_sq(anova_test)
+}
+
+## Macaque monkey
+{
+  macaque_matrix <- neuro_rdm[lower.tri(neuro_rdm, diag = FALSE)]
+  average_participant_matrix <- average_matrix[lower.tri(average_matrix, diag = FALSE)]
+  correlation_macaque_neuron <- cor.test(macaque_matrix, average_participant_matrix)
+  correlation_macaque_neuron
 }
 

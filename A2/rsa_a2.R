@@ -5,7 +5,7 @@
   library(RColorBrewer)
   library(gplots)
   library(reshape2)
-  library(sjstats)
+  library(lsr)
 }
 
 ## Read tables
@@ -195,14 +195,90 @@
   face_animated_matrix <- as.matrix(animate_face_matrix)
   animacy_matrix <- first_without_diagonal
   anova_test <- aov(neural_matrix ~ face_animated_matrix + animacy_matrix)
-  eta_sq(anova_test)
+  summary(anova_test)
+  etaSquared(anova_test, anova = FALSE)
+  
+  anova_test2 <- aov(neural_matrix ~ animacy_matrix + face_animated_matrix)
+  summary(anova_test2)
+  etaSquared(anova_test2, anova = FALSE)
 }
 
 ## Macaque monkey
 {
+  # correlation
   macaque_matrix <- neuro_rdm[lower.tri(neuro_rdm, diag = FALSE)]
   average_participant_matrix <- average_matrix[lower.tri(average_matrix, diag = FALSE)]
   correlation_macaque_neuron <- cor.test(macaque_matrix, average_participant_matrix)
   correlation_macaque_neuron
+  
+  # plot
+  
+  # animated part
+  neuro_animacy <- neuro_rdm[1:48, 1:48]
+  macaque_animacy_matrix <- neuro_animacy[lower.tri(neuro_animacy, diag = FALSE)]
+  average_animacy <- average_matrix[1:48, 1:48]
+  average_animacy_matrix <- average_animacy[lower.tri(average_animacy, diag = FALSE)]
+  correlation_animacy_macaque <- cor.test(macaque_animacy_matrix, average_animacy_matrix)
+  correlation_animacy_macaque
+  
+  # inanimated part
+  neuro_inanimated <- neuro_rdm[49:92, 49:92]
+  macaque_inanimated_matrix <- neuro_inanimated[lower.tri(neuro_inanimated, diag = FALSE)]
+  average_inanimated <- average_matrix[49:92, 49:92]
+  average_inanimated_matrix <- average_inanimated[lower.tri(average_inanimated, diag = FALSE)]
+  correlation_inanimated_macaque <- cor.test(macaque_inanimated_matrix, average_inanimated_matrix)
+  correlation_inanimated_macaque
+}
+
+## Behaviour
+{
+  # image
+  heatmap_behaviour <- melt(as.matrix(behaviour_rdm))
+  
+  ggplot(heatmap_behaviour, aes(heatmap_behaviour$Var1, heatmap_behaviour$Var2, fill= heatmap_behaviour$value)) + 
+    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("")
+  
+  # average subject
+  behaviour_matrix <- behaviour_rdm[lower.tri(behaviour_rdm, diag = FALSE)]
+  correlation_behaviour <- cor.test(behaviour_matrix, average_participant_matrix)
+  correlation_behaviour
+  
+  # animated part
+  behaviour_animacy <- behaviour_rdm[1:48, 1:48]
+  behaviour_animacy_matrix <- behaviour_animacy[lower.tri(behaviour_animacy, diag = FALSE)]
+  correlation_animacy_behaviour <- cor.test(behaviour_animacy_matrix, average_animacy_matrix)
+  correlation_animacy_behaviour
+  
+  # inanimated part
+  behaviour_inanimated <- behaviour_rdm[49:92, 49:92]
+  behaviour_inanimated_matrix <- behaviour_inanimated[lower.tri(behaviour_inanimated, diag = FALSE)]
+  correlation_inanimated_behaviour <- cor.test(behaviour_inanimated_matrix, average_inanimated_matrix)
+  correlation_inanimated_behaviour
+}
+
+## HMAX
+{
+  # image
+  heatmap_hmax <- melt(as.matrix(hmax_rdm))
+  
+  ggplot(heatmap_hmax, aes(heatmap_hmax$Var1, heatmap_hmax$Var2, fill= heatmap_hmax$value)) + 
+    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("")
+  
+  # average subject
+  hmax_matrix <- hmax_rdm[lower.tri(hmax_rdm, diag = FALSE)]
+  correlation_hmax <- cor.test(hmax_matrix, average_participant_matrix)
+  correlation_hmax
+  
+  # animated part
+  hmax_animacy <- hmax_rdm[1:48, 1:48]
+  hmax_animacy_matrix <- hmax_animacy[lower.tri(hmax_animacy, diag = FALSE)]
+  correlation_animacy_hmax <- cor.test(hmax_animacy_matrix, average_animacy_matrix)
+  correlation_animacy_hmax
+  
+  # inanimated part
+  hmax_inanimated <- hmax_rdm[49:92, 49:92]
+  hmax_inanimated_matrix <- hmax_inanimated[lower.tri(hmax_inanimated, diag = FALSE)]
+  correlation_inanimated_hmax <- cor.test(hmax_inanimated_matrix, average_inanimated_matrix)
+  correlation_inanimated_hmax
 }
 

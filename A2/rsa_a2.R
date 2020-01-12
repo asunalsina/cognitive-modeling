@@ -45,10 +45,10 @@
   heatmap_participant <- melt(RDM[[2]])
   
   ggplot(heatmap_neural_data, aes(heatmap_neural_data$Var1, heatmap_neural_data$Var2, fill= heatmap_neural_data$value)) + 
-    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("")
+    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("") + labs(fill = "Dissimilarity")
   
   ggplot(heatmap_participant, aes(heatmap_participant$Var1, heatmap_participant$Var2, fill= heatmap_participant$value)) + 
-    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("")
+    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("") + labs(fill = "Dissimilarity")
   
   RDM_average <- list()
   for(i in 1:12){
@@ -60,7 +60,7 @@
   heatmap_average <- melt(average_matrix)
   
   ggplot(heatmap_average, aes(heatmap_average$Var1, heatmap_average$Var2, fill= heatmap_average$value)) + 
-    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("")
+    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("") + labs(fill = "Dissimilarity")
 }
 
 ## First column t.test (same animacy - different animacy)
@@ -211,7 +211,8 @@
   correlation_macaque_neuron <- cor.test(macaque_matrix, average_participant_matrix)
   correlation_macaque_neuron
   
-  # plot
+  # scatter plot
+  plot(average_participant_matrix, macaque_matrix, xlab = "Average participant", ylab = "Macaque neuron")
   
   # animated part
   neuro_animacy <- neuro_rdm[1:48, 1:48]
@@ -236,7 +237,7 @@
   heatmap_behaviour <- melt(as.matrix(behaviour_rdm))
   
   ggplot(heatmap_behaviour, aes(heatmap_behaviour$Var1, heatmap_behaviour$Var2, fill= heatmap_behaviour$value)) + 
-    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("")
+    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("") + labs(fill = "Dissimilarity")
   
   # average subject
   behaviour_matrix <- behaviour_rdm[lower.tri(behaviour_rdm, diag = FALSE)]
@@ -262,7 +263,7 @@
   heatmap_hmax <- melt(as.matrix(hmax_rdm))
   
   ggplot(heatmap_hmax, aes(heatmap_hmax$Var1, heatmap_hmax$Var2, fill= heatmap_hmax$value)) + 
-    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("")
+    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("") + labs(fill = "Dissimilarity")
   
   # average subject
   hmax_matrix <- hmax_rdm[lower.tri(hmax_rdm, diag = FALSE)]

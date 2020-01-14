@@ -139,6 +139,17 @@
       }
     }  
   
+    animate_noface_matrix <- data.frame()
+    for (i in 1:length(first_animate_without_diagonal)){
+      if(first_animate_without_diagonal[i] == 1 & sixth_without_diagonal[i] == 0){
+        animate_noface_matrix <- rbind(animate_noface_matrix, TRUE)
+      }else{
+        animate_noface_matrix <- rbind(animate_noface_matrix, FALSE)
+      }
+    }  
+    
+    t.test(neural_responses_triangular[animate_face_matrix == TRUE], neural_responses_triangular[animate_noface_matrix == TRUE], paired = FALSE)
+    
     # face -> TRUE
     first_neural_face_animate <- neural_responses_triangular[animate_face_matrix == TRUE]
     # no face -> FALSE
@@ -184,6 +195,18 @@
     first_neural_nohuman_animate <- neural_responses_triangular[animate_human_matrix == FALSE]
     human_t_test <- t.test(first_neural_human_animate, first_neural_nohuman_animate, paired = FALSE)
     human_t_test
+    
+    animate_nohuman_matrix <- data.frame()
+    for (i in 1:length(first_animate_without_diagonal)){
+      if(first_animate_without_diagonal[i] == 1 & third_without_diagonal[i] == 0){
+        animate_nohuman_matrix <- rbind(animate_nohuman_matrix, TRUE)
+      }else{
+        animate_nohuman_matrix <- rbind(animate_nohuman_matrix, FALSE)
+      }
+    }  
+    
+    t.test(neural_responses_triangular[animate_human_matrix == TRUE], neural_responses_triangular[animate_nohuman_matrix == TRUE], paired = FALSE)
+    
   }
 }
 

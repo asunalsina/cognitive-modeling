@@ -62,15 +62,15 @@
 
         exp(lambda * utility(threshold, scale.points, coverage.parameter, densityf, cumulativef)) / 
             sum(sapply(scale.points, 
-                       function(x){exp(lambda * utility(threshold, scale.points, 
+                       function(x){exp(lambda * utility(x, scale.points, 
                                                         coverage.parameter, densityf, cumulativef))}))
     }
 
 
     use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
-
-        sum(sapply(scale.points[scale.points >= degree], 
-                  function(x){probability.threshold(degree, scale.points, lambda, 
+        
+        sum(sapply(scale.points[scale.points <= degree], 
+                  function(x){probability.threshold(x, scale.points, lambda, 
                                                     coverage.parameter, densityf, cumulativef)}))
     }
 
@@ -85,7 +85,24 @@
     #use.adjective should be very unlikely on values 5 and smaller and very likely afterwards
     round(sapply(1:10, function(x) {use.adjective(x, 1:10, 50, 0, function(x) {dnorm(x, 5, 1)}, function(x) {pnorm(x, 5, 1)})})[5], 3) == 0.005
     round(sapply(1:10, function(x) {use.adjective(x, 1:10, 50, 0, function(x) {dnorm(x, 5, 1)}, function(x) {pnorm(x, 5, 1)})})[6], 3) == 1
-
+    
+    # probability threshold plot
+    thres <- sapply(1:250, function(x){probability.threshold(x, scale.points, 50, 0, function(x) {dnorm(x, 180, 10)}, function(x) {pnorm(x, 180, 10)})})
+    thres_data <- data.frame()
+    thres_data <- as.data.frame(cbind(scale.points, thres))
+    names(thres_data)[names(thres_data) == "scale.points"] <- "x"
+    names(thres_data)[names(thres_data) == "thres"] <- "y"
+    ggplot(thres_data, aes(x = x, y = y)) + 
+        geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
+    
+    # use adjective plot
+    adj <- sapply(1:250, function(x){use.adjective(x, scale.points, 50, 0, function(x) {dnorm(x, 180, 10)}, function(x) {pnorm(x, 180, 10)})})
+    adj_data <- data.frame()
+    adj_data <- as.data.frame(cbind(scale.points, adj))
+    names(adj_data)[names(adj_data) == "scale.points"] <- "x"
+    names(adj_data)[names(adj_data) == "adj"] <- "y"
+    ggplot(adj_data, aes(x = x, y = y)) + 
+        geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
 }
 
 # Task 2:

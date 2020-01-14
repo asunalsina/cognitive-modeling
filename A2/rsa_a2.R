@@ -214,6 +214,12 @@
   # scatter plot
   plot(average_participant_matrix, macaque_matrix, xlab = "Average participant", ylab = "Macaque neuron")
   
+  heatmap_macaque <- melt(as.matrix(neuro_rdm))
+  
+  ggplot(heatmap_macaque, aes(heatmap_macaque$Var1, heatmap_macaque$Var2, fill= heatmap_macaque$value)) + 
+    geom_tile() + scale_fill_viridis_c(option = "B") + xlab("") + ylab("") + labs(fill = "Dissimilarity")
+  
+  
   # animated part
   neuro_animacy <- neuro_rdm[1:48, 1:48]
   macaque_animacy_matrix <- neuro_animacy[lower.tri(neuro_animacy, diag = FALSE)]

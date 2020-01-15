@@ -69,9 +69,13 @@
 
     use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
         
+        denom <- sum(sapply(scale.points, function(x){
+            exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
+        
         sum(sapply(scale.points[scale.points <= degree], 
-                  function(x){probability.threshold(x, scale.points, lambda, 
-                                                    coverage.parameter, densityf, cumulativef)}))
+                  function(x){exp(lambda * 
+                                      utility(x, scale.points, coverage.parameter, 
+                                              densityf, cumulativef))})) / denom 
     }
 
     # Help - tests you should pass
@@ -92,6 +96,8 @@
     thres_data <- as.data.frame(cbind(scale.points, thres))
     names(thres_data)[names(thres_data) == "scale.points"] <- "x"
     names(thres_data)[names(thres_data) == "thres"] <- "y"
+    max_thres <- max(thres_data$y)
+    thres_value <- thres_data$x[thres_data$y == max_thres]
     ggplot(thres_data, aes(x = x, y = y)) + 
         geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
     
@@ -101,6 +107,9 @@
     adj_data <- as.data.frame(cbind(scale.points, adj))
     names(adj_data)[names(adj_data) == "scale.points"] <- "x"
     names(adj_data)[names(adj_data) == "adj"] <- "y"
+    # find the right degree
+    max_degree <- max(adj_data$y)
+    degree_value <- adj_data$x[adj_data$y == max_degree]
     ggplot(adj_data, aes(x = x, y = y)) + 
         geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
 }

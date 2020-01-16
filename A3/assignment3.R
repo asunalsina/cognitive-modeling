@@ -189,8 +189,42 @@
     
 # Task 3:
 {
+    three.points <- c(1:14)
+    data.gaus.big <- subset(data.gaus, Adjective == "big")
+    data.left.big <- subset(data.left, Adjective == "big")
+    data.moved.big <- subset(data.moved, Adjective == "big")
+    
+    gaus.adj.pos <- sapply(1:14, function(x){use.adjective(x, three.points, 40, 0.1, function(x) {dnorm(x, 6, 2)}, function(x) {pnorm(x, 6, 2)})})
+    left.adj.pos <- sapply(1:14, function(x){use.adjective(x, three.points, 40, 0.1, function(x) {dgamma(x, shape = 4, scale = 1.5)}, function(x) {pgamma(x, shape = 4, scale = 1.5)})})
+    moved.adj.pos <- sapply(1:14, function(x){use.adjective(x, three.points, 40, 0.1, function(x) {dnorm(x, 9, 2)}, function(x) {pnorm(x, 9, 2)})})
+    
+    gaus.adj.neg <- sapply(1:14, function(x){use.adjective(x, three.points, 40, -0.1, function(x) {dnorm(x, 6, 2)}, function(x) {pnorm(x, 6, 2)})})
+    left.adj.neg <- sapply(1:14, function(x){use.adjective(x, three.points, 40, -0.1, function(x) {dgamma(x, shape = 4, scale = 1.5)}, function(x) {pgamma(x, shape = 4, scale = 1.5)})})
+    moved.adj.neg <- sapply(1:14, function(x){use.adjective(x, three.points, 40, -0.1, function(x) {dnorm(x, 9, 2)}, function(x) {pnorm(x, 9, 2)})})
+    
+    gaus.adj.zero <- sapply(1:14, function(x){use.adjective(x, three.points, 40, 0, function(x) {dnorm(x, 6, 2)}, function(x) {pnorm(x, 6, 2)})})
+    left.adj.zero <- sapply(1:14, function(x){use.adjective(x, three.points, 40, 0, function(x) {dgamma(x, shape = 4, scale = 1.5)}, function(x) {pgamma(x, shape = 4, scale = 1.5)})})
+    moved.adj.zero <- sapply(1:14, function(x){use.adjective(x, three.points, 40, 0, function(x) {dnorm(x, 9, 2)}, function(x) {pnorm(x, 9, 2)})})
+    
     # check cor between predicted and observed data
-    cor(..., ..., method="pearson")
+    cor.gaus.pos <- cor(data.gaus.big$percentage, gaus.adj.pos, method="pearson")
+    cor.left.pos <- cor(data.left.big$percentage, left.adj.pos, method="pearson")
+    cor.moved.pos <- cor(data.moved.big$percentage, moved.adj.pos, method="pearson")
+    
+    cor.gaus.neg <- cor(data.gaus.big$percentage, gaus.adj.neg, method="pearson")
+    cor.left.neg <- cor(data.left.big$percentage, left.adj.neg, method="pearson")
+    cor.moved.neg <- cor(data.moved.big$percentage, moved.adj.neg, method="pearson")
+    
+    cor.gaus.zero <- cor(data.gaus.big$percentage, gaus.adj.zero, method="pearson")
+    cor.left.zero <- cor(data.left.big$percentage, left.adj.zero, method="pearson")
+    cor.moved.zero <- cor(data.moved.big$percentage, moved.adj.zero, method="pearson")
+    
+    #role of prior distribution
+    left.norm.neg <- sapply(1:14, function(x){use.adjective(x, three.points, 40, -0.1, function(x) {dnorm(x, 4, 1.5)}, function(x) {pnorm(x, 4, 1.5)})})
+    moved.gamma.neg <- sapply(1:14, function(x){use.adjective(x, three.points, 40, -0.1, function(x) {dgamma(x, shape = 9, scale = 2)}, function(x) {pgamma(x, shape = 9, scale = 2)})})
+    
+    cor.left.norm <- cor(data.left.big$percentage, left.norm.neg, method="pearson")
+    cor.moved.gamma <- cor(data.moved.big$percentage, moved.gamma.neg, method="pearson")
 
     #install.packages("BayesianTools")
     library(BayesianTools)

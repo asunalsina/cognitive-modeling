@@ -92,25 +92,25 @@
     
     # probability threshold plot
     thres <- sapply(1:250, function(x){probability.threshold(x, scale.points, 50, 0, function(x) {dnorm(x, 180, 10)}, function(x) {pnorm(x, 180, 10)})})
-    thres_data <- data.frame()
-    thres_data <- as.data.frame(cbind(scale.points, thres))
-    names(thres_data)[names(thres_data) == "scale.points"] <- "x"
-    names(thres_data)[names(thres_data) == "thres"] <- "y"
-    max_thres <- max(thres_data$y)
-    thres_value <- thres_data$x[thres_data$y == max_thres]
-    ggplot(thres_data, aes(x = x, y = y)) + 
+    thres.data <- data.frame()
+    thres.data <- as.data.frame(cbind(scale.points, thres))
+    names(thres.data)[names(thres.data) == "scale.points"] <- "x"
+    names(thres.data)[names(thres.data) == "thres"] <- "y"
+    max.thres <- max(thres.data$y)
+    thres.value <- thres.data$x[thres.data$y == max.thres]
+    ggplot(thres.data, aes(x = x, y = y)) + 
         geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
     
     # use adjective plot
     adj <- sapply(1:250, function(x){use.adjective(x, scale.points, 50, 0, function(x) {dnorm(x, 180, 10)}, function(x) {pnorm(x, 180, 10)})})
-    adj_data <- data.frame()
-    adj_data <- as.data.frame(cbind(scale.points, adj))
-    names(adj_data)[names(adj_data) == "scale.points"] <- "x"
-    names(adj_data)[names(adj_data) == "adj"] <- "y"
+    adj.data <- data.frame()
+    adj.data <- as.data.frame(cbind(scale.points, adj))
+    names(adj.data)[names(adj.data) == "scale.points"] <- "x"
+    names(adj.data)[names(adj.data) == "adj"] <- "y"
     # find the right degree
-    max_degree <- max(adj_data$y)
-    degree_value <- adj_data$x[adj_data$y == max_degree]
-    ggplot(adj_data, aes(x = x, y = y)) + 
+    max.degree <- max(adj.data$y)
+    degree.value <- adj.data$x[adj.data$y == max.degree]
+    ggplot(adj.data, aes(x = x, y = y)) + 
         geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
 }
 
@@ -119,6 +119,51 @@
     # Explore expected.success and use.adjective for various prior distribution functions.
     # For this, assume that coverage.parameter $c$ is at 0 and lambda is at 50.
 
+    ## IQ
+    # mean = 100, sd = 5, range = 70-130
+    iq.points = c(70:130)
+    
+    iq.es <- sapply(70:130, function(x){expected.success(x, iq.points, function(x) {dnorm(x, 100, 5)}, function(x) {pnorm(x, 100, 5)})})
+    iq.es.data <- data.frame()
+    iq.es.data <- as.data.frame(cbind(iq.points, iq.es))
+    names(iq.es.data)[names(iq.es.data) == "iq.points"] <- "x"
+    names(iq.es.data)[names(iq.es.data) == "iq.es"] <- "y"
+    iq.es.max.degree <- max(iq.es.data$y)
+    iq.es.degree.value <- iq.es.data$x[iq.es.data$y == iq.es.max.degree]
+    ggplot(iq.es.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
+    
+    iq.adj <- sapply(70:130, function(x){use.adjective(x, iq.points, 50, 0, function(x) {dnorm(x, 100, 5)}, function(x) {pnorm(x, 100, 5)})})
+    iq.adj.data <- data.frame()
+    iq.adj.data <- as.data.frame(cbind(iq.points, iq.adj))
+    names(iq.adj.data)[names(iq.adj.data) == "iq.points"] <- "x"
+    names(iq.adj.data)[names(iq.adj.data) == "iq.adj"] <- "y"
+    iq.adj.max.degree <- max(iq.adj.data$y)
+    iq.adj.degree.value <- iq.adj.data$x[iq.adj.data$y == iq.adj.max.degree]
+    ggplot(iq.adj.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
+    
+    
+    ## Waiting time
+    # mean = 2, variance = 2, shape = 2, scale = 1
+    wait.points <- c(1:30)
+    
+    wait.es <- sapply(1:30, function(x){expected.success(x, wait.points, function(x) {dgamma(x, shape = 2, scale = 1)}, function(x) {pgamma(x, shape = 2, scale = 1)})})
+    wait.es.data <- data.frame()
+    wait.es.data <- as.data.frame(cbind(wait.points, wait.es))
+    names(wait.es.data)[names(wait.es.data) == "wait.points"] <- "x"
+    names(wait.es.data)[names(wait.es.data) == "wait.es"] <- "y"
+    wait.es.max.degree <- max(wait.es.data$y)
+    wait.es.degree.value <- wait.es.data$x[wait.es.data$y == wait.es.max.degree]
+    ggplot(wait.es.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
+    
+    wait.adj <- sapply(1:30, function(x){use.adjective(x, wait.points, 50, 0, function(x) {dgamma(x, shape = 2, scale = 1)}, function(x) {pgamma(x, shape = 2, scale = 1)})})
+    wait.adj.data <- data.frame()
+    wait.adj.data <- as.data.frame(cbind(wait.points, wait.adj))
+    names(wait.adj.data)[names(wait.adj.data) == "wait.points"] <- "x"
+    names(wait.adj.data)[names(wait.adj.data) == "wait.adj"] <- "y"
+    wait.adj.max.degree <- max(wait.adj.data$y)
+    wait.adj.degree.value <- wait.adj.data$x[wait.adj.data$y == wait.adj.max.degree]
+    ggplot(wait.adj.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
+    
     data.adjective <- read.csv(file="adjective-data.csv", header=TRUE)
 
     gaussian.dist <-   c(1,2,3,4,5,6,5,4,3,2,1,0,0,0)

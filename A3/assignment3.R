@@ -120,10 +120,10 @@
     # For this, assume that coverage.parameter $c$ is at 0 and lambda is at 50.
 
     ## IQ
-    # mean = 100, sd = 5, range = 70-130
-    iq.points = c(70:130)
+    # mean = 100, sd = 15, range = 70-130
+    iq.points = c(55:145)
     
-    iq.es <- sapply(70:130, function(x){expected.success(x, iq.points, function(x) {dnorm(x, 100, 5)}, function(x) {pnorm(x, 100, 5)})})
+    iq.es <- sapply(55:145, function(x){expected.success(x, iq.points, function(x) {dnorm(x, 100, 15)}, function(x) {pnorm(x, 100, 15)})})
     iq.es.data <- data.frame()
     iq.es.data <- as.data.frame(cbind(iq.points, iq.es))
     names(iq.es.data)[names(iq.es.data) == "iq.points"] <- "x"
@@ -132,7 +132,7 @@
     iq.es.degree.value <- iq.es.data$x[iq.es.data$y == iq.es.max.degree]
     ggplot(iq.es.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
     
-    iq.adj <- sapply(70:130, function(x){use.adjective(x, iq.points, 50, 0, function(x) {dnorm(x, 100, 5)}, function(x) {pnorm(x, 100, 5)})})
+    iq.adj <- sapply(55:145, function(x){use.adjective(x, iq.points, 50, 0, function(x) {dnorm(x, 100, 15)}, function(x) {pnorm(x, 100, 15)})})
     iq.adj.data <- data.frame()
     iq.adj.data <- as.data.frame(cbind(iq.points, iq.adj))
     names(iq.adj.data)[names(iq.adj.data) == "iq.points"] <- "x"
@@ -263,24 +263,59 @@
         collect <- 0
     
         for (i in 1:14) {
-            collect  <- collect + dnorm(data.gaus.big$percentage[i], mean=..., sd=0.1, log=TRUE)
+            collect  <- collect + dnorm(data.gaus.big$percentage[i], mean= 
+                                            use.adjective(i, 1:14, param1[1], param1[2], 
+                                                          function(x) {dnorm(x, 6, 2)}, 
+                                                          function(x) {pnorm(x, 6, 2)}), 
+                                        sd=0.1, log=TRUE)
 
         }
 
         return(collect)
     }
 
-    #bayesianSetup <- createBayesianSetup(likelihood = likelihood, prior = prior)
+    bayesianSetup <- createBayesianSetup(likelihood = likelihood, prior = prior)
 
-    #iter = 10000
+    iter = 10000
 
-    #settings = list(iterations = iter, message = FALSE)
+    settings = list(iterations = iter, message = FALSE)
 
-    #out <- runMCMC(bayesianSetup = bayesianSetup, settings = settings)
+    out <- runMCMC(bayesianSetup = bayesianSetup, settings = settings)
+    
+    summary(out)
+
 }
 
 # Task 5
 {
+    data.gaus.three <- subset(data.gaus, Adjective == "big" | Adjective == "pointy" | Adjective == "tall")
     
+    prior1 <- createUniformPrior(lower=c(-1,1), upper=c(1,50), best=NULL)
+    
+    likelihood1 <- function(param1) {
+        
+        collect <- 0
+        
+        for (i in 1:14) {
+            collect  <- collect + dnorm(data.gaus.three$percentage[i], mean= 
+                                            use.adjective(i, 1:14, param1[1], param1[2], 
+                                                          function(x) {dnorm(x, 6, 2)}, 
+                                                          function(x) {pnorm(x, 6, 2)}), 
+                                        sd=0.1, log=TRUE)
+            
+        }
+        
+        return(collect)
+    }
+    
+    bayesianSetup1 <- createBayesianSetup(likelihood = likelihood1, prior = prior1)
+    
+    iter = 10000
+    
+    settings1 = list(iterations = iter, message = FALSE)
+    
+    out1 <- runMCMC(bayesianSetup = bayesianSetup1, settings = settings1)
+    
+    summary(out1)
 }
 

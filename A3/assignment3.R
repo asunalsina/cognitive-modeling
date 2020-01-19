@@ -66,7 +66,6 @@
                                                         coverage.parameter, densityf, cumulativef))}))
     }
 
-
     use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
         
         denom <- sum(sapply(scale.points, function(x){
@@ -130,7 +129,7 @@
     names(iq.es.data)[names(iq.es.data) == "iq.es"] <- "y"
     iq.es.max.degree <- max(iq.es.data$y)
     iq.es.degree.value <- iq.es.data$x[iq.es.data$y == iq.es.max.degree]
-    ggplot(iq.es.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
+    ggplot(iq.es.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("IQ") + ylab("P") + theme_gray(20)
     
     iq.adj <- sapply(55:145, function(x){use.adjective(x, iq.points, 50, 0, function(x) {dnorm(x, 100, 15)}, function(x) {pnorm(x, 100, 15)})})
     iq.adj.data <- data.frame()
@@ -139,7 +138,7 @@
     names(iq.adj.data)[names(iq.adj.data) == "iq.adj"] <- "y"
     iq.adj.max.degree <- max(iq.adj.data$y)
     iq.adj.degree.value <- iq.adj.data$x[iq.adj.data$y == iq.adj.max.degree]
-    ggplot(iq.adj.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
+    ggplot(iq.adj.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("IQ") + ylab("P") + theme_gray(20)
     
     
     ## Waiting time
@@ -153,7 +152,7 @@
     names(wait.es.data)[names(wait.es.data) == "wait.es"] <- "y"
     wait.es.max.degree <- max(wait.es.data$y)
     wait.es.degree.value <- wait.es.data$x[wait.es.data$y == wait.es.max.degree]
-    ggplot(wait.es.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
+    ggplot(wait.es.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("time") + ylab("P") + theme_gray(20)
     
     wait.adj <- sapply(1:30, function(x){use.adjective(x, wait.points, 50, 0, function(x) {dgamma(x, shape = 2, scale = 1)}, function(x) {pgamma(x, shape = 2, scale = 1)})})
     wait.adj.data <- data.frame()
@@ -162,7 +161,7 @@
     names(wait.adj.data)[names(wait.adj.data) == "wait.adj"] <- "y"
     wait.adj.max.degree <- max(wait.adj.data$y)
     wait.adj.degree.value <- wait.adj.data$x[wait.adj.data$y == wait.adj.max.degree]
-    ggplot(wait.adj.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("height") + ylab("P") + theme_gray(20)
+    ggplot(wait.adj.data, aes(x = x, y = y)) + geom_area(fill="green", alpha=.7)  + xlab("time") + ylab("P") + theme_gray(20)
     
     data.adjective <- read.csv(file="adjective-data.csv", header=TRUE)
 
@@ -288,7 +287,8 @@
 
 # Task 5
 {
-    data.gaus.three <- subset(data.gaus, Adjective == "big" | Adjective == "pointy" | Adjective == "tall")
+    data.adj.three <- subset(data.adjective, Adjective == "big" | Adjective == "pointy" | Adjective == "tall")
+    data.adj.three <- subset(data.adj.three, Distribution == "gaussian" | Distribution == "left" | Distribution == "moved")
     
     prior1 <- createUniformPrior(lower=c(-1,1), upper=c(1,50), best=NULL)
     
@@ -297,7 +297,7 @@
         collect <- 0
         
         for (i in 1:14) {
-            collect  <- collect + dnorm(data.gaus.three$percentage[i], mean= 
+            collect  <- collect + dnorm(data.adj.three$percentage[i], mean= 
                                             use.adjective(i, 1:14, param1[1], param1[2], 
                                                           function(x) {dnorm(x, 6, 2)}, 
                                                           function(x) {pnorm(x, 6, 2)}), 
